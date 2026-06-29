@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Client Autoscribe Dashboard</title>
+    <style>
+        table {
+        margin: auto;
+        width: 75%;
+  border-collapse: collapse;
+}
+
+table, th, td {
+  border: 1px solid black;
+  text-align: center;
+}
+h2 {
+ text-align: center;
+}
+
+    </style>
+</head>
+<body>
+<h2>Client Autoscribe Management Dashboard for {{ vendor }}</h2>
+<table>
+    <tr>
+        <th>Brands \ Actions</th>
+<!--        <th> Translations </th>-->
+        <th>Import new products</th>
+        <th>Export new products</th>
+        <th>Export new products (precomputed)</th>
+        <th>Export new products to Catalogix</th>
+        <th>Import cataloging data</th>
+        <th>Review curated+translated data</th>
+        <th>Mark bulk reviewed</th>
+        <th>Export reviewed data</th>
+        <th>Trigger RPA</th>
+        <th>Export for RPA</th>
+        <th>Post data to client</th>
+<!--        <th>Import rejects</th>-->
+        <th>Export rejected products</th>
+        <th>Mark products pushed</th>
+        <th>View RPA dashboard</th>
+    </tr>
+    {% for brand in brands %}
+    <tr>
+        <th> <a href="/api/autoscribe/vendors/{{vendor}}/brands/{{brand}}/config">{{ brand }}</a></th>
+<!--        <th><a href="/api/autoscribe/{{vendor}}/translations/{{ brand }}">Ontologies</a></th>-->
+        <td>
+            <form action="/api/autoscribe/vendors/{{vendor}}/brands/{{ brand }}/upload" method="post" enctype="multipart/form-data">
+                <input type="file" name="file" required>
+                <input type="submit" value="Upload">
+            </form>
+
+        </td>
+        <td>
+            <div>
+                <a href="/api/autoscribe/vendors/{{vendor}}/brands/{{ brand }}/export"> {{ new_products[brand] }} </a>
+            </div>
+            {% if new_products_precomp[brand] < new_products[brand] %}
+            <div>
+                <a href="/api/autoscribe/vendors/{{vendor}}/brands/{{ brand }}/retry-live">
+                    Retry ({{ new_products[brand] - new_products_precomp[brand] }})</a>
+            </div>
+            {% endif %}
+        </td>
+        <td><a href="/api/autoscribe/vendors/{{vendor}}/brands/{{ brand }}/export-precomputed"> {{ new_products_precomp[brand] }} </a></td>
+        <td><a href="/api/autoscribe/vendors/{{vendor}}/brands/{{ brand }}/export-catalogix"> {{ new_products[brand] }} </td>
+        <td>
+            <form action="/api/autoscribe/vendors/{{vendor}}/brands/{{ brand }}/import" method="post" enctype="multipart/form-data">
+                <input type="file" name="file" required multiple>
+                <input type="submit" value="Upload">
+            </form>
+        </td>
+        <td><a href="/api/autoscribe/vendors/{{vendor}}/brands/{{ brand }}/review">{{ to_review_products[brand] }}</a></td>
+        <td><a style="color:red" href="/api/autoscribe/vendors/{{vendor}}/brands/{{ brand }}/mark-reviewed-bulk">{{ to_review_products[brand] }}</a></td>
+        <td><a href="/api/autoscribe/vendors/{{vendor}}/brands/{{ brand }}/export-reviewed">{{ to_push_products[brand] }}</a></td>
+        <td><a style="color:red" href="/api/autoscribe/vendors/{{vendor}}/brands/{{ brand }}/rpa-trigger">{{ to_push_products[brand] }}</a></td>
+        <td><a href="/api/autoscribe/vendors/{{vendor}}/brands/{{ brand }}/export-rpa">{{ to_push_products[brand] }}</a></td>
+        <td><a style="color:red" href="/api/autoscribe/vendors/{{vendor}}/brands/{{ brand }}/post-to-client">{{ to_push_products[brand] }}</a></td>
+<!--        <td><a href="/api/autoscribe/{{vendor}}/reject">Import rejects</a></td>-->
+        <td><a href="/api/autoscribe/vendors/{{vendor}}/brands/{{ brand }}/export-rejected">{{ rejected_products[brand] }}</a></td>
+        <td><a style="color:red" href="/api/autoscribe/vendors/{{vendor}}/brands/{{ brand }}/mark-pushed">{{ to_push_products[brand] }}</a></td>
+        <td><a href="/api/autoscribe/vendors/{{vendor}}/brands/{{ brand }}/rpa-status">View</a></td>
+    </tr>
+    {% endfor %}
+</table>
+<p style="text-align:right">
+    * <span style="color:red">Red </span> links indicate operations which are hard to revert.
+</p>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Client Autoscribe RPA Status</title>
+    <style>
+        table {
+        margin: auto;
+        width: 75%;
+  border-collapse: collapse;
+}
+
+table, th, td {
+  border: 1px solid black;
+  text-align: center;
+}
+h2 {
+ text-align: center;
+}
+
+
+    </style>
+</head>
+<body>
+<h2>RPA status for vendor "{{ vendor }}" brand "{{ brand }}"</h2>
+<table>
+    <tr>
+        <th>RPA Request ID</th>
+        <th>Filename</th>
+        <th>Template Filename</th>
+        <th>BatchRequestCallbackUrl</th>
+        <th>BatchRequestId</th>
+        <th>BatchRequestStatus</th>
+        <th>BatchRequestException</th>
+        <th>LastModifiedTimeStamp</th>
+        <th>FileLink</th>
+        <th>Time Taken(sec)</th>
+    </tr>
+    {% for row in rows %}
+    <tr>
+        <td><a href="/api/autoscribe/vendors/{{ vendor }}/brands/{{ brand }}/rpa-status/{{ row.rpa_request_id }}/download">{{ row.rpa_request_id }}</a></td>
+        <td>
+            <div><a href="/rpa/requests/{{ row.rpa_request_id }}/{{ row.filename }}">{{ row.filename }}</a></div>
+            <div> {{ row.shape }} </div>
+        </td>
+        <td>
+            {% if row.template_filename %}
+            <div><a href="/rpa/requests/{{ row.rpa_request_id }}/{{ row.template_filename }}">{{ row.template_filename }}</a></div>
+            <div> {{ row.md5 }} </div>
+            {% endif %}
+        </td>
+        <td>
+            {% if 'BatchRequestCallbackUrl' in row %}
+            <a href="{{ row.BatchRequestCallbackUrl }}">Check status</a>
+            {% endif %}
+        </td>
+        <td>
+            {% if 'BatchRequestId' in row %}
+            {{ row.BatchRequestId }}
+            {% endif %}
+        </td>
+        <td>
+            {% if 'BatchRequestStatus' in row %}
+            {{ row.BatchRequestStatus }}
+            {% endif %}
+        </td>
+        <td>
+            {% if 'error' in row %}
+            {{ row.error }}
+            {% elif 'BatchRequestException' in row %}
+            {{ row.BatchRequestException }}
+            {% endif %}
+        </td>
+        <td>
+            {% if 'LastModifiedTimeStamp' in row %}
+            {{ row.LastModifiedTimeStamp }}
+            {% endif %}
+        </td>
+        <td>
+            {% if 'StreamoidRequests' in row and row.StreamoidRequests|length > 0 and row.StreamoidRequests[0].GeneratedMarketplaceFile|length > 0 %}
+            <a href="{{ row.StreamoidRequests[0].GeneratedMarketplaceFile }}">Download</a>
+            {% endif %}
+        </td>
+        <td>
+            {% if row.time %}
+            {{ row.time|round(1) }}
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+</body>
+</html>

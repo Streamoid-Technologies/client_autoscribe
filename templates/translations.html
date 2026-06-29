@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Custom Rules Automation</title>
+</head>
+
+<body>
+<h2>Please select translations for {{ vendor }}</h2>
+<form method="post" enctype="multipart/form-data">
+    <table>
+        {% for key, value in data %}
+        <tr>
+            <td>{{ key }}</td>
+            <td>
+                <input type="checkbox" name="values" value="{{ key }}"
+                       {% if value %}
+                       checked
+                       {% endif %}
+                >
+            </td>
+        </tr>
+        {% endfor %}
+        <tr>
+            <td></td>
+            <td><input type="submit" value="Submit"></td>
+        </tr>
+    </table>
+</form>
+</body>
+
+</html>
