@@ -1,0 +1,9 @@
+celery
+redis
+pymongo
+requests
+pandas
+jinja2
+werkzeug
+tqdm
+uwsgi

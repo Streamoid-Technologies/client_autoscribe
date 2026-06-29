@@ -1,0 +1,10 @@
+__pycache__/
+*.py[cod]
+*.swp
+*.swo
+.env
+.env.*
+
+integrations/apt-bonbon-179602-14457dbec204.json
+teams_urls.json
+slack_config.json

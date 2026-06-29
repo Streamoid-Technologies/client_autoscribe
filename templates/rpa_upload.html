@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>RPA test page</title>
+</head>
+<body>
+<h3>Please upload valid files and submit to RPA for conversion</h3>
+<form method="post" enctype="multipart/form-data">
+    <table>
+        <tr>
+            <td>Template file (Excel/CSV)</td>
+            <td><input type="file" name="template" required></td>
+        </tr>
+        <tr>
+            <td>Data file (CSV)</td>
+            <td><input type="file" name="data" required></td>
+        </tr>
+        <tr>
+            <td>Sub-sheet name</td>
+            <td><input type="text" name="sub_sheet_name" required></td>
+        </tr>
+        <tr>
+            <td>Header row</td>
+            <td><input type="text" name="header_row" required></td>
+        </tr>
+        <tr>
+            <td>Data row</td>
+            <td><input type="text" name="data_row" required></td>
+        </tr>
+        <tr>
+            <td>Allow duplicates?</td>
+            <td><input type="checkbox" name="duplicate" value="1"></td>
+        </tr>
+        <tr>
+            <td>Use dev?</td>
+            <td><input type="checkbox" name="use_dev" value="1"></td>
+        </tr>
+        <tr>
+            <td>Use autofill?</td>
+            <td><input type="checkbox" name="use_autofill" value="1"></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><input type="submit" value="Submit"></td>
+        </tr>
+    </table>
+</form>
+</body>
+</html>

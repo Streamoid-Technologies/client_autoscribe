@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post to catalogix</title>
+</head>
+<body>
+    <h2>Post to catalogix</h2>
+    <form id="myForm" action="/api/autoscribe/post-to-catalogix"  method="post" enctype="multipart/form-data">
+        <label for="vendor_name">Select Vendor:</label>
+        <select id="vendor_name" name="vendor_name">
+            <!-- Loop through the list of vendors and create options -->
+            {% for vendor in vendor %}
+                <option value="{{ vendor }}">{{ vendor }}</option>
+            {% endfor %}
+        </select><br><br>
+        
+        <!-- Brands dropdown will be populated dynamically based on the selected vendor -->
+        <label for="brand_name">Select Brand:</label>
+        <select id="brand_name" name="brand_name" disabled>
+            <option value="" disabled selected>Please select a vendor first</option>
+        </select><br><br>
+        
+        <label for="all_new_products">Include All New Products:</label>
+        <select id="all_new_products" name="all_new_products">
+            <option value="true">True</option>
+            <option value="false">False</option>
+        </select><br><br>
+        
+        <!-- Text input field for entering style codes -->
+        <label for="style_codes">Style Codes:</label>
+        <textarea id="style_codes" name="style_codes" rows="4" cols="50"></textarea><br><br>
+        
+        <input type="submit" value="Submit">
+    </form>
+
+    <script>
+        // Function to update brands dropdown based on selected vendor
+        document.getElementById('vendor_name').addEventListener('change', function() {
+            var vendor = this.value;
+            var brandSelect = document.getElementById('brand_name');
+            brandSelect.innerHTML = ''; // Clear previous options
+            if (vendor) {
+                // Enable the brands dropdown
+                brandSelect.disabled = false;
+                // Get brands for the selected vendor from the options passed from uWSGI
+                var brands = JSON.parse('{{ brands|tojson|safe }}');
+                var vendorBrands = brands[vendor];
+                // Populate the brands dropdown
+                vendorBrands.forEach(brand => {
+                    var option = document.createElement('option');
+                    option.value = brand;
+                    option.text = brand;
+                    brandSelect.appendChild(option);
+                });
+            } else {
+                // Disable the brands dropdown if no vendor is selected
+                brandSelect.disabled = true;
+            }
+        });
+    </script>
+</body>
+</html>

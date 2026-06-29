@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bulk upload vendor products</title>
+</head>
+<body>
+<form method="post" enctype="multipart/form-data">
+    <h3> Upload .xslx file from vendor</h3>
+    <table>
+        <tr>
+            <td>Vendor</td>
+            <td>
+                <select id="vendor" name="vendor">
+                    {% for vendor in vendors %}
+                     <option value="{{ vendor }}">{{ vendor }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>File</td>
+            <td><input type="file" name="file"></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><input type="submit" value="Upload"></td>
+        </tr>
+    </table>
+</form>
+</body>
+</html>

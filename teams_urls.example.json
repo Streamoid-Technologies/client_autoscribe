@@ -1,0 +1,6 @@
+{
+  "vendor_name": {
+    "post": "https://example.invalid/teams-post-webhook",
+    "reject": "https://example.invalid/teams-reject-webhook"
+  }
+}

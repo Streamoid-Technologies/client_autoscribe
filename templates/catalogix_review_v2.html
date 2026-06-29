@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<head>
+<title>Product review page</title>
+    <style>
+    table {
+        margin: auto;
+    }
+    table, td, th {
+        border: 1px solid black;
+        border-collapse: collapse;
+    }
+    h2, h3, td {
+        text-align: center;
+    }
+    </style>
+    <script>
+        function mark_reviewed(style_code) {
+            var vendor = "{{ vendor }}";
+            var brand = "{{ brand }}";
+            console.log(style_code);
+            var url = `/api/autoscribe/vendors/${vendor}/brands/${brand}/products/${style_code}/catalogix-mark-reviewed`;
+            fetch(url,
+                        {
+                            method: 'post',
+                        })
+                        .then(response => response.json())
+                        .then(response => {
+                            console.log(response);
+                            let res = document.getElementById(style_code);
+                            res.innerHTML = '<p> Reviewed </p>';
+                        })
+        }
+
+        function mark_hold(uniqueId) {
+            var vendor = "{{ vendor }}";
+            var brand = "{{ brand }}";
+            const style_code = uniqueId.replace('unique-', '');
+            console.log(style_code);
+            var url = `/api/autoscribe/vendors/${vendor}/brands/${brand}/products/${style_code}/catalogix-hold`;
+            fetch(url,
+                        {
+                            method: 'post',
+                        })
+                        .then(response => response.json())
+                        .then(response => {
+                            console.log(response);
+                            let res = document.getElementById(uniqueId);
+                            res.innerHTML = '<p> On Hold </p>';
+                            let res2 = document.getElementById(style_code);
+                            console.log(res2)
+                            res2.innerHTML = '<p> In order to mark reviewed need to Unhold First </p>';
+                        })
+        }
+
+        function mark_unhold(uniqueId) {
+            var vendor = "{{ vendor }}";
+            var brand = "{{ brand }}";
+            const style_code = uniqueId.replace('unique-', '');
+            console.log(style_code);
+            var url = `/api/autoscribe/vendors/${vendor}/brands/${brand}/products/${style_code}/catalogix-unhold`;
+            fetch(url,
+                        {
+                            method: 'post',
+                        })
+                        .then(response => response.json())
+                        .then(response => {
+                            console.log(response);
+                            let res = document.getElementById(uniqueId);
+                            res.innerHTML = '<p> Removed Hold </p>';
+                            let res2 = document.getElementById(style_code);
+                            res2.innerHTML = '<p> <strong>Reload</strong> to Mark Product Reviewed </p>';
+                        })
+        }
+    </script>
+    
+</head>
+<body>
+    {% set targets = ['brand_attributes'] + targets|select('ne', 'brand_attributes')|list %}
+
+    <table>
+        <tr>
+            <th>Reviewed</th>
+            <th>Hold</th>
+            <!-- <th>Style Code</th>
+            <th>Request ID</th> -->
+            <th>Image</th>
+            <th>Client info</th>
+            <th>SMP_attributes</th>
+            {% for target in targets %}
+            <th> {{ target }} </th>
+            {% endfor %}
+            
+        </tr>
+        {% for item in data %}
+        <tr>
+            <td>
+                <div id="{{ item['_id'] }}">
+                    {% if not item.reviewed %}
+                        {% if 'hold' in item %}
+                            {% if item['hold'] %}
+                                <p>In order to mark reviewed need to Unhold First</p>
+                            {% else %}
+                                <button name="review" onclick="mark_reviewed('{{ item['_id'] }}')"> Mark Reviewed </button>  
+                            {% endif %}
+                        {% else %}
+                            <button name="review" onclick="mark_reviewed('{{ item['_id'] }}')"> Mark Reviewed </button>
+                        {% endif %}  
+                    {% else %}
+                        <p>Reviewed</p>
+                    {% endif %}
+                </div>      
+                <div>
+                    <a href="/api/autoscribe/vendors/{{ vendor }}/brands/{{brand}}/products/{{ item['_id'] }}/catalogix-view"
+                       target="_blank"> View </a>
+                </div>
+            </td>
+            <td>
+                <div id="unique-{{ item['_id'] }}">
+                    {% if 'hold' in item %}
+                        {% if item['hold'] %}
+                            <p>Product is on <strong>HOLD</strong></p>
+                            <button name="review" onclick="mark_unhold('unique-{{ item['_id'] }}')"> Unhold </button>  
+                        {% else %}
+                            <p>Product is <strong>not</strong> on hold</p>
+                            <button name="review" onclick="mark_hold('unique-{{ item['_id'] }}')"> Hold </button>  
+                        {% endif %}
+                    {% else %}
+                        <p>Product is <strong>not</strong> on hold</p>
+                        <button name="review" onclick="mark_hold('unique-{{ item['_id'] }}')"> Hold </button>
+                    {% endif %}  
+                </div>             
+            </td>
+            <!-- <td> {{ item['_id'] }}</td>
+            <td> {{ item.output.RequestID }}</td> -->
+            <td>
+                {% set unique_urls = [] %}
+                {% for target in item.data.keys() %}
+                    {% if target in item.output %}
+                        {% for k, v in item.data[target].items() %}
+                            {% if v is string and (v.startswith("http://") or v.startswith("https://")) and v not in unique_urls %}
+                                <img src="{{ v }}" alt="Image" height="100">
+                                {% set _ = unique_urls.append(v) %}
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
+            </td>
+
+            <td>
+                <table>
+                    {% for k, v in item.info.items() %}
+                    <tr>
+                        <td> {{ k }} </td>
+                        <td> {{ v }} </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </td>
+            <td>
+                <table>
+                    {% if 'SMP_attributes' in item.data %}
+                        {% for k, v in item.data.SMP_attributes.items() %}
+                            <tr>
+                                <td> {{ k }} </td>
+                                <td> {{ v }} </td>
+                            </tr>
+                        {% endfor %}
+                    {% endif %}
+                </table>
+            </td>
+            {% for target in targets %}
+            <td>
+                {% if target in item.output %}
+                <table>
+                    {% for k, v in item.output[target].items() %}
+                    <tr>
+                        <td> {{ k }} </td>
+                        {% if v is string and (v.startswith("http://") or v.startswith("https://")) and v not in unique_urls %}
+                            <td>{{ v }}</td>
+                        {% else %}
+                            <td>{{ v }}</td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </table>
+                {% endif %}
+            </td>
+            {% endfor %}
+            
+        </tr>
+        {% endfor %}
+    </table>
+</body>

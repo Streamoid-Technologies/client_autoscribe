@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Autoscribe Test page</title>
+    <script>
+        function submit() {
+            let url = document.getElementById('url').value;
+            console.log(url);
+            fetch(url).then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    vendorName = data.data.vendor_name.replace('v_', '').replace('_autoscribe', '');
+                    const data3 = new FormData();
+                    let request = JSON.stringify(data.data.StyleCodes);
+                    let req = document.getElementById('request');
+                    req.innerHTML = '<p>' + request + '</p>';
+                    data3.append('data', request);
+                    console.log(data3);
+                    fetch('/api/autoscribe/abfrl/vendor-tokens')
+                        .then(response => response.json())
+                        .then(data2 => {
+                            console.log(data2);
+                            fetch('/api/autoscribe/abfrl/post/' + vendorName,
+                                {
+                                    method: 'post',
+                                    headers: { 'vendor-token': data2[vendorName] },
+                                    body: data3
+                                })
+                                .then(response => response.json())
+                                .then(response => {
+                                    console.log(response);
+                                    let res = document.getElementById('response');
+                                    res.innerHTML = '<p>' + JSON.stringify(response) + '</p>';
+                                })
+                        });
+                });
+        }
+    </script>
+</head>
+
+<body>
+    <h2>Submit JSON link from Slack post</h2>
+    <table>
+        <tr>
+            <td>URL</td>
+            <td><input type="text" id="url"></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><button id='submit' onclick="submit()">Submit</button></td>
+        </tr>
+        <table>
+            <div>
+                <h4>Request</h4>
+                <div id="request"></div>
+            </div>
+            <div>
+                <h4>Response</h4>
+                <div id="response"></div>
+            </div>
+</body>
+
+</html>

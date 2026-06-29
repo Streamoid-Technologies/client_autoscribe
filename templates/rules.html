@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Custom Rules Automation</title>
+</head>
+
+<body>
+<h2>Please upload rule sheets (.xlsx) with corresponding ontology and rules type</h2>
+<form method="post" enctype="multipart/form-data">
+    <table>
+        <tr>
+            <td>Ontology</td>
+            <td><select id="ontology" name="ontology">
+                {% for option in options %}
+                <option id="{{ option }}" value="{{ option }}">{{option}}</option>
+                {% endfor %}
+            </select></td>
+        </tr>
+        <tr>
+            <td>Rules sheet</td>
+            <td><input type="file" id="file" name="file"></td>
+        </tr>
+        <tr>
+            <td>Rules type</td>
+            <td>
+                    <input type="radio" id="fabric" name="type" value="fabric">
+                    <label for="fabric">Fabric</label><br>
+                    <input type="radio" id="non-image" name="type" value="non-image" checked>
+                    <label for="non-image">Non-image</label><br>
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><input type="submit" value="Upload"></td>
+        </tr>
+    </table>
+</form>
+</body>
+
+</html>
