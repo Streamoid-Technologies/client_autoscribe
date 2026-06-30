@@ -1,0 +1,30 @@
+[project]
+name = "client-autoscribe"
+version = "0.1.0"
+description = "Runtime environment for the Client Autoscribe API, workers, cron jobs, and RPA interface."
+readme = "README.md"
+requires-python = ">=3.13,<3.14"
+dependencies = [
+    "celery",
+    "fastapi",
+    "google-cloud-storage",
+    "gunicorn",
+    "jinja2",
+    "openpyxl",
+    "pandas",
+    "pyarrow",
+    "pymongo",
+    "python-dateutil",
+    "python-multipart",
+    "pytz",
+    "redis",
+    "requests",
+    "tqdm",
+    "uvicorn",
+    "uwsgi",
+    "werkzeug",
+    "xlrd",
+]
+
+[tool.uv]
+package = false

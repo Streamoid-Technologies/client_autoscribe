@@ -4,10 +4,32 @@
 
 The Client Autoscribe system is a comprehensive product data management platform that handles the complete lifecycle of product data from client uploads through curation, review, and final delivery back to vendors. The system integrates with Catalogix for data curation and provides a dashboard for internal team management.
 
+Repository: [Streamoid-Technologies/experiments/client_autoscribe](https://github.com/Streamoid-Technologies/experiments/tree/master/client_autoscribe)
+
 ## System Architecture
 
 The system follows a workflow where product data flows through several stages:
 1. **Products POST** → **Products SAVE client-autoscribe** → **Post to Catalogix** → **Curate in Catalogix** → **Import back to client-autoscribe** → **Review** → **Post To Client**
+
+## Python Environment
+
+The project is aligned to the platform Python 3.13 baseline and uses `uv` for
+dependency management. Use `pyproject.toml` and `uv.lock` as the source of
+truth; `requirements.txt` is retained only as a compatibility reference.
+
+Install dependencies with:
+
+```bash
+uv sync --frozen
+```
+
+Run services through the locked environment, for example:
+
+```bash
+uv run uwsgi --ini uwsgi_client_autoscribe_v2.ini
+uv run celery -A client_autoscribe_worker_v2 worker -Q client_autoscribe_v2
+uv run gunicorn -c gunicorn.conf.py rpa_interface:app
+```
 
 
 Prod Machine: ssh ubuntu@65.21.91.53 (Hetzner)
