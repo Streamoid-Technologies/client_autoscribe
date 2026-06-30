@@ -106,7 +106,7 @@ class ClientAutoscribeDB(object):
 
     def upsert_vendor(self, vendor_name, token):
         coll = self.client[self.common_db][self.tokens_coll]
-        coll.update({'_id': vendor_name}, {'$set': {'token': token}}, upsert=True)
+        coll.update_one({'_id': vendor_name}, {'$set': {'token': token}}, upsert=True)
 
     def get_products(self, vendor_name, style_codes):
         vendor_db = get_db_name(vendor_name)
@@ -205,14 +205,14 @@ class ClientAutoscribeDB(object):
                 found = False
                 for row in coll.find({'_id': style_code}):
                     data['product_uuid'] = row['product_uuid']
-                    coll.update({'_id': style_code}, {'$set': data})
+                    coll.update_one({'_id': style_code}, {'$set': data})
                     details[style_code] = {'code': 0, 'message': 'already exists'}
                     found = True
                 if not found:
                     data['_id'] = style_code
                     data['last_modified'] = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
                     data['product_uuid'] = uuid4().hex
-                    coll.insert(data)
+                    coll.insert_one(data)
                     details[style_code] = {'code': 0, 'message': 'new created'}
             except Exception as e:
                 details[style_code] = {'code': 1, 'message': str(e)}
@@ -246,7 +246,7 @@ class ClientAutoscribeDB(object):
             style_codes['_id'] = uuid4().hex
             style_codes['submit_time'] = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
             style_codes['resolved'] = False
-            coll.insert(style_codes)
+            coll.insert_one(style_codes)
             logger.info('Inserting new reject: %s %s', style_codes['_id'], style_code)
         else:
             logger.info('Reject already exists: %s %s', style_codes['_id'], style_code)
@@ -359,14 +359,14 @@ class ClientAutoscribeDB(object):
 
             output = self.translate(vendor_name, translations, curated.get('data', {}), product, targets)
             output.update({'StyleCode': style_code, 'RequestID': product.get('RequestID', None)})
-            coll2.update({'_id': style_code}, {'$set': {'output': escape(output)}}, upsert=True)
+            coll2.update_one({'_id': style_code}, {'$set': {'output': escape(output)}}, upsert=True)
 
     def on_push(self, vendor_name, style_code, request_id):
         # only update for first time
         vendor_db = get_db_name(vendor_name)
         now = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
         coll = self.client[vendor_db][self.cataloging_coll]
-        coll.update({'_id': style_code, 'pushed': False}, {'$set': {'pushed': True, 'push_time': now}})
+        coll.update_one({'_id': style_code, 'pushed': False}, {'$set': {'pushed': True, 'push_time': now}})
 
         # mark existing issues as resolved while pushing
         coll2 = self.client[vendor_db][self.rejects_coll]
@@ -436,7 +436,7 @@ class ClientAutoscribeDB(object):
     def mark_reviewed(self, vendor_name, style_code):
         vendor_db = get_db_name(vendor_name)
         coll = self.client[vendor_db][self.cataloging_coll]
-        coll.update({'_id': style_code}, {'$set': {'reviewed': True}})
+        coll.update_one({'_id': style_code}, {'$set': {'reviewed': True}})
 
     def import_data(self, vendor_name, data):
         # find max batch size in products
@@ -461,12 +461,12 @@ class ClientAutoscribeDB(object):
             row1['_id'] = style_code
             row1['reviewed'] = False
             row1['pushed'] = False
-            coll2.update({'_id': style_code}, row1, upsert=True)
+            coll2.replace_one({'_id': style_code}, row1, upsert=True)
 
             style_codes.append(style_code)
             # update product batch number, if not exists
-            coll1.update({'_id': style_code, 'batch_number': {'$exists': False}},
-                         {'$set': {'batch_number': batch_number}})
+            coll1.update_one({'_id': style_code, 'batch_number': {'$exists': False}},
+                             {'$set': {'batch_number': batch_number}})
 
         logger.info('translating...')
         logger.info(style_codes)
@@ -477,7 +477,7 @@ class ClientAutoscribeDB(object):
     def save_live(self, vendor_name, style_code, output):
         vendor_db = get_db_name(vendor_name)
         coll = self.client[vendor_db][self.live_coll]
-        coll.update({'_id': style_code}, {'$set': {'data': output}}, upsert=True)
+        coll.update_one({'_id': style_code}, {'$set': {'data': output}}, upsert=True)
 
     def get_live(self, vendor_name, style_code):
         vendor_db = get_db_name(vendor_name)

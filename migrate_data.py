@@ -60,7 +60,7 @@ def create_config(db1, db2, vendor_name):
         targets2['brand_attributes'] = brand_ontology
 
         coll = cdb1[brand_ontology]
-        custom_rules = True if coll.count() > 0 else False
+        custom_rules = coll.count_documents({}) > 0
 
         config = {'token': token,
                   'brand_ontology': brand_ontology,
