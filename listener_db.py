@@ -45,7 +45,7 @@ class ListenerDB(object):
     def save_event(self, data):
         coll = self.client[self.listener_db][self.events_coll]
         data['_id'] = data['event_id']
-        coll.update({'_id': data['_id']}, data, upsert=True)
+        coll.replace_one({'_id': data['_id']}, data, upsert=True)
 
     def get_vendor(self, username):
         return username.replace('v_', '').replace('_autoscribe', '')
@@ -170,7 +170,7 @@ class ListenerDB(object):
         coll2 = self.client[self.listener_db][self.events_coll]
         for row in coll1.find():
             row['_id'] = row['event_id']
-            coll2.insert(row)
+            coll2.insert_one(row)
 
     def get_autoscribe_conversations(self, oldest=None, latest=None):
         messages = self.get_conversations(self.autoscribe_channel, oldest=oldest, latest=latest)

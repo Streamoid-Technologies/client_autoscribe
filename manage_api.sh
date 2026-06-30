@@ -7,7 +7,7 @@ then
     echo "Please provide option [start/stop/restart]"
 elif [ $1 == "start" ]
 then
-    cd ${BASE_DIR} && gunicorn ${APP}
+    cd ${BASE_DIR} && ~/.local/bin/uv run gunicorn ${APP}
 elif [ $1 == "stop" ]
 then
     pkill -F ${PID_FILE}

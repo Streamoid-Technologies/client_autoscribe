@@ -4,7 +4,7 @@
 
 The Client Autoscribe system is a comprehensive product data management platform that handles the complete lifecycle of product data from client uploads through curation, review, and final delivery back to vendors. The system integrates with Catalogix for data curation and provides a dashboard for internal team management.
 
-Repository: [Streamoid-Technologies/experiments/client_autoscribe](https://github.com/Streamoid-Technologies/experiments/tree/master/client_autoscribe)
+Repository: [Streamoid-Technologies/client_autoscribe](https://github.com/Streamoid-Technologies/client_autoscribe/tree/main)
 
 ## System Architecture
 
@@ -34,11 +34,11 @@ uv run gunicorn -c gunicorn.conf.py rpa_interface:app
 
 Prod Machine: ssh ubuntu@65.21.91.53 (Hetzner)
 
-Start: cd /home/tanuj/git/experiments/client_autoscribe/ && uwsgi --ini uwsgi_client_autoscribe_v2.ini
+Start: cd /home/ubuntu/git/experiments/client_autoscribe/ && ~/.local/bin/uv run uwsgi --ini uwsgi_client_autoscribe_v2.ini
 
-Restart: uwsgi --reload /home/ubuntu/logs/client_autoscribe_v2.pid
+Restart: ~/.local/bin/uv run uwsgi --reload /home/ubuntu/logs/client_autoscribe_v2.pid
 
-Local: uwsgi --plugin python3 --plugin http --http-socket :4009 --wsgi-file client_autoscribe_api_v2.py --callable application
+Local: ~/.local/bin/uv run uwsgi --http-socket :4009 --wsgi-file client_autoscribe_api_v2.py --callable application
 
 ## Key Components
 

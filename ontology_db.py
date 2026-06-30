@@ -87,7 +87,7 @@ class OntologyDB(object):
     def write_ontology(self, coll, all_data):
         for _id in all_data:
             id_field = {'_id': _id}
-            coll.update(id_field, all_data[_id], upsert=True)
+            coll.replace_one(id_field, all_data[_id], upsert=True)
 
     def get_parsed_ontology(self, all_data):
         pass
@@ -102,7 +102,7 @@ class OntologyDB(object):
 
     def get_ontologies(self):
         db = self.client[self.ontology_db]
-        return [x for x in db.collection_names() if '.' not in x]
+        return [x for x in db.list_collection_names() if '.' not in x]
 
     def _matches_v2(self, tags, condition):
         condition2 = {tag: True for tag in tags}
@@ -119,9 +119,9 @@ class OntologyDB(object):
     def set_ontology_conditionals(self, ontology, tags):
         coll = self.get_ontology_collection(ontology)
         tags = escape(tags)
-        return coll.update({'_id': 'root'}, {'$addToSet': {'tags': tags},
-                                             '$set': {'type': 'conditional',
-                                                      'include': []}}, upsert=True)
+        return coll.update_one({'_id': 'root'}, {'$addToSet': {'tags': tags},
+                                                 '$set': {'type': 'conditional',
+                                                          'include': []}}, upsert=True)
 
     def get_ontology_conditionals(self, ontology, tags, show_all=False):
         coll = self.get_ontology_collection(ontology)
