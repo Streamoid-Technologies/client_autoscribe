@@ -1,9 +1,21 @@
+# Compatibility list only.
+# pyproject.toml and uv.lock are the source of truth for installs.
 celery
-redis
-pymongo
-requests
-pandas
+fastapi
+google-cloud-storage
+gunicorn
 jinja2
-werkzeug
+openpyxl
+pandas
+pyarrow
+pymongo
+python-dateutil
+python-multipart
+pytz
+redis
+requests
 tqdm
+uvicorn
 uwsgi
+werkzeug
+xlrd
